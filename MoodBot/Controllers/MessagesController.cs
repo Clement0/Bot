@@ -21,6 +21,7 @@ namespace MoodBot
         /// 
 
         static private int mode = 0;
+        static private bool requestTitle = false;
         static private string title = "";
 
         private string ask(int mode, string type, string message)
@@ -28,6 +29,7 @@ namespace MoodBot
             if (MessagesController.title.Equals(""))
             {
                 MessagesController.mode = mode;
+                MessagesController.requestTitle = true;
                 return "De quel film voulez-vous avoir la " + type + "?";
             }
             MessagesController.mode = 0;
@@ -43,6 +45,20 @@ namespace MoodBot
                 Rootobject LUIS = await GetEntityFromLUIS(message.Text);
                 if (LUIS.intents.Count() > 0)
                 {
+
+                    if (requestTitle)
+                    {
+                        title = message.Text;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < LUIS.entities.Count(); i++)
+                        {
+                            if (LUIS.entities[i].type.Equals("Title"))
+                                title = LUIS.entities[i].entity;
+                        }
+                    }
+
                     if (LUIS.intents[0].intent.Equals("SetAnswer")
                         && LUIS.entities.Count() == 1
                         && LUIS.entities[0].type.Equals("NoAnswer"))
@@ -61,12 +77,12 @@ namespace MoodBot
                     {
                         LUIS.intents[0].intent = "DisplayRate";
                     }
-
-                    for (int i = 0; i < LUIS.entities.Count(); i++)
+                    else if (mode == 4)
                     {
-                        if (LUIS.entities[i].type.Equals("Title"))
-                            title = LUIS.entities[i].entity;
+                        title = message.ToString();
                     }
+
+
 
                     switch (LUIS.intents[0].intent)
                     {
@@ -188,7 +204,7 @@ namespace MoodBot
                     answer = "Désolé je ne vous ai pas compris...";
                 }
 
-                return message.CreateReplyMessage(answer);
+                return message.CreateReplyMessage(answer + mode);
 
 
 
