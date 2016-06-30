@@ -46,9 +46,10 @@ namespace MoodBot
                 if (LUIS.intents.Count() > 0)
                 {
 
-                    if (requestTitle)
+                    if (MessagesController.requestTitle)
                     {
                         title = message.Text;
+                        MessagesController.requestTitle = false;
                     }
                     else
                     {
