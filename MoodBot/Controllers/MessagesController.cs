@@ -42,7 +42,7 @@ namespace MoodBot
             if (message.Type == "Message")
             {
                 string answer;
-                Rootobject LUIS = await GetEntityFromLUIS(message.Text);
+                Luis LUIS = await GetEntityFromLUIS(message.Text);
                 if (LUIS.intents.Count() > 0)
                 {
 
@@ -204,7 +204,7 @@ namespace MoodBot
                     answer = "Désolé je ne vous ai pas compris...";
                 }
 
-                return message.CreateReplyMessage(answer + mode);
+                return message.CreateReplyMessage(answer);
 
 
 
@@ -254,10 +254,10 @@ namespace MoodBot
         }
 
        
-        private static async Task<Rootobject> GetEntityFromLUIS(string Query)
+        private static async Task<Luis> GetEntityFromLUIS(string Query)
         {
             Query = Uri.EscapeDataString(Query);
-            Rootobject Data = new Rootobject();
+            Luis Data = new Luis();
             using (HttpClient client = new HttpClient())
             {
                 string RequestURI = "https://api.projectoxford.ai/luis/v1/application?id=6510dc6d-c79d-402d-994a-419164f25627&subscription-key=5455eb8082b9465282db6623b157d8a0&q=" + Query;
@@ -266,7 +266,7 @@ namespace MoodBot
                 if (msg.IsSuccessStatusCode)
                 {
                     var JsonDataResponse = await msg.Content.ReadAsStringAsync();
-                    Data = JsonConvert.DeserializeObject<Rootobject>(JsonDataResponse);
+                    Data = JsonConvert.DeserializeObject<Luis>(JsonDataResponse);
                 }
             }
             return Data;

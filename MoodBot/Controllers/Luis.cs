@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-    public class Rootobject
+    public class Luis
     {
         public string query { get; set; }
         public Intent[] intents { get; set; }
