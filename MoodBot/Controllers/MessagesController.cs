@@ -48,7 +48,8 @@ namespace MoodBot
 
                     if (MessagesController.requestTitle)
                     {
-                        title = message.Text;
+                Autocomplete1 auto = await getTitleFromARTE(message.Text);
+                        title = auto.title;
                         MessagesController.requestTitle = false;
                     }
                     else
@@ -131,7 +132,7 @@ namespace MoodBot
                                         break;
                                     case "HappyFeeling":
                                         answer = "Tu as l'air heureux. Voici un programme qui pourrait te convenir."
-                                        +"*Afficher les film de type "
+                                        + "*Afficher les film de type "
                                         + "Action "
                                         + "Comedie "
                                         + "Policier "
@@ -146,7 +147,7 @@ namespace MoodBot
                                         break;
                                     case "TiredFeeling":
                                         answer = "Tu as l'air fatigué. Voici un programme qui pourrait te convenir."
-                                        +"*Afficher les film de type "
+                                        + "*Afficher les film de type "
                                         + "Action "
                                         + "Comedie "
                                         //+ "Policier "
@@ -161,7 +162,7 @@ namespace MoodBot
                                         break;
                                     case "AnxiousFeeling":
                                         answer = "Tu as l'air anxieux. Voici un programme qui pourrait te convenir."
-                                        +"*Afficher les film de type "
+                                        + "*Afficher les film de type "
                                         + "Action "
                                         + "Comedie "
                                         //+ "Policier "
@@ -176,7 +177,7 @@ namespace MoodBot
                                         break;
                                     case "EnergyFeeling":
                                         answer = "Tu as l'air en pleine forme. Voici un programme qui pourrait te convenir."
-                                        +"*Afficher les film de type "
+                                        + "*Afficher les film de type "
                                        + "Action "
                                        + "Comedie "
                                        + "Policier "
@@ -254,7 +255,7 @@ namespace MoodBot
             return null;
         }
 
-       
+
         private static async Task<Luis> GetEntityFromLUIS(string Query)
         {
             Query = Uri.EscapeDataString(Query);
@@ -268,6 +269,24 @@ namespace MoodBot
                 {
                     var JsonDataResponse = await msg.Content.ReadAsStringAsync();
                     Data = JsonConvert.DeserializeObject<Luis>(JsonDataResponse);
+                }
+            }
+            return Data;
+        }
+
+        private static async Task<Autocomplete1> getTitleFromARTE(string Query)
+        {
+            Query = Uri.EscapeDataString(Query);
+            Autocomplete1 Data = new Autocomplete1();
+            using (HttpClient client = new HttpClient())
+            {
+                string RequestURI = "https://api.arte.tv/api/opa/v2/autocomplete/programs?terms=" + Query + "&limit=1";
+                HttpResponseMessage msg = await client.GetAsync(RequestURI);
+
+                if (msg.IsSuccessStatusCode)
+                {
+                    var JsonDataResponse = await msg.Content.ReadAsStringAsync();
+                    Data = JsonConvert.DeserializeObject<Autocomplete1>(JsonDataResponse);
                 }
             }
             return Data;
